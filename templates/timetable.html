@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Timetable – Coulsdon Runners{% endblock %}
+{% block content %}
+  <h1>Timetable</h1>
+  <div class="row row-cols-1 row-cols-md-2 g-3">
+    {% for s in sessions %}
+      <div class="col">
+        <div class="card h-100">
+          <div class="card-body">
+            <h2 class="h5">{{ s.name }}</h2>
+            <p class="mb-1"><strong>{{ s.get_day_display }}</strong> {{ s.start_time }}–{{ s.end_time }}</p>
+            {% if s.location %}<p class="text-muted mb-0">{{ s.location }}</p>{% endif %}
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <p>No sessions yet.</p>
+    {% endfor %}
+  </div>
+{% endblock %}
