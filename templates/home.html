@@ -1,14 +1,64 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Coulsdon Runners</title>
-  </head>
-  <body>
-    <main>
-      <h1>Coulsdon Runners</h1>
-      <p>It works. CSS later.</p>
-    </main>
-  </body>
-</html>
+{% extends "base.html" %} {% block title %}Home – Coulsdon Runners{% endblock %}
+{% block content %}
+<div class="pb-4">
+    <h1 class="mb-2">Welcome to Coulsdon Runners</h1>
+    <p class="text-muted">
+        CSS later — focusing on structure, content, accessibility, and
+        performance first.
+    </p>
+</div>
+
+<section id="timetable" class="mb-5">
+    <h2 class="h4 mb-3">Upcoming sessions</h2>
+    {% if sessions %}
+    <div class="row g-3">
+        {% for s in sessions %}
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h3 class="h5 card-title">{{ s.name }}</h3>
+                    <p class="card-text mb-1">
+                        <strong>{{ s.get_day_display }}</strong> {{ s.start_time
+                        }}–{{ s.end_time }}
+                    </p>
+                    {% if s.location %}
+                    <p class="card-text">
+                        <small class="text-muted">{{ s.location }}</small>
+                    </p>
+                    {% endif %} {% if s.description %}
+                    <p class="card-text">{{ s.description }}</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p>No sessions yet. Add some in the admin.</p>
+    {% endif %}
+</section>
+
+<section id="testimonials" class="mb-5">
+    <h2 class="h4 mb-3">What people say</h2>
+    {% if testimonials %}
+    <div class="row g-3">
+        {% for t in testimonials %}
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <blockquote class="blockquote mb-0">
+                        <p>“{{ t.quote }}”</p>
+                        <footer class="blockquote-footer">
+                            {{ t.author }}
+                        </footer>
+                    </blockquote>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p>Add a few testimonials in the admin and mark some as featured.</p>
+    {% endif %}
+</section>
+{% endblock %}
