@@ -2,9 +2,13 @@ import os
 from pathlib import Path
 
 import dj_database_url
+from dotenv import load_dotenv
 
 # Base
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+load_dotenv()
+
 
 # Core settings
 SECRET_KEY = os.environ.get("SECRET_KEY", "dev-key")
@@ -20,6 +24,9 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "core",
+    "pages",
+    "timetable",
+    "testimonials",
 ]
 
 # Middleware (include WhiteNoise early)
@@ -55,12 +62,33 @@ TEMPLATES = [
 WSGI_APPLICATION = "sitecore.wsgi.application"
 
 # Database — SQLite locally; honors DATABASE_URL (Heroku) automatically
-DATABASES = {
-    "default": dj_database_url.config(
-        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
-        conn_max_age=600,
-    )
-}
+_db_url = os.environ.get("DATABASE_URL", "").strip()
+
+
+def _is_postgres(url: str) -> bool:
+    return url.startswith("postgres://") or url.startswith("postgresql://")
+
+
+if _db_url and _is_postgres(_db_url):
+    # Production / external Postgres (Heroku)
+    DATABASES = {
+        "default": dj_database_url.parse(
+            _db_url,
+            conn_max_age=600,
+            ssl_require=(not DEBUG),
+        )
+    }
+else:
+    # Local default: SQLite (no sslmode!)
+    from pathlib import Path
+
+    BASE_DIR = Path(__file__).resolve().parent.parent
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
+        }
+    }
 
 # Internationalization
 LANGUAGE_CODE = "en-us"
